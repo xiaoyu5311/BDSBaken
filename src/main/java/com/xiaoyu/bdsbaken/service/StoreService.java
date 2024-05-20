@@ -7,10 +7,7 @@ import com.xiaoyu.bdsbaken.entity.dto.ResponseResult;
 import com.xiaoyu.bdsbaken.entity.po.RecycledGoodsPO;
 import com.xiaoyu.bdsbaken.entity.po.SellGoodsPO;
 import com.xiaoyu.bdsbaken.entity.po.UserPO;
-import com.xiaoyu.bdsbaken.entity.vo.RecycleGoodsVO;
-import com.xiaoyu.bdsbaken.entity.vo.RecycledGoodsDetailVO;
-import com.xiaoyu.bdsbaken.entity.vo.SellGoodsVO;
-import com.xiaoyu.bdsbaken.entity.vo.SellGoodsDetailVO;
+import com.xiaoyu.bdsbaken.entity.vo.*;
 import com.xiaoyu.bdsbaken.mapper.RecycledGoodsPOMapper;
 import com.xiaoyu.bdsbaken.mapper.SellGoodsPOMapper;
 import com.xiaoyu.bdsbaken.mapper.UserPOMapper;
@@ -41,12 +38,15 @@ public class StoreService
         Double balance = new LambdaQueryChainWrapper<>(userPOMapper).eq(UserPO::getUuid, sellGoodsVO.getUuid()).one().getBalance();
         Double goodsPrice = new LambdaQueryChainWrapper<>(sellGoodsPOMapper).eq(SellGoodsPO::getGoodsId, sellGoodsVO.getGoodsId()).one().getGoodsPrice();
         Double sum = total * goodsPrice;
-        if (balance > sum)
+        if (balance >= sum)
         {
             new LambdaUpdateChainWrapper<>(userPOMapper).eq(UserPO::getUuid, uuid).set(UserPO::getBalance, balance - sum).update();
-            return ResponseResult.success(true);
+
+            BoughtGoodsVO boughtGoodsVO = new BoughtGoodsVO(balance - sum, true);
+            return ResponseResult.success(boughtGoodsVO);
         }
-        return ResponseResult.success(false);
+        BoughtGoodsVO boughtGoodsVO = new BoughtGoodsVO(balance, false);
+        return ResponseResult.success(boughtGoodsVO);
     }
 
     //
@@ -67,6 +67,7 @@ public class StoreService
         Double sum = total * goodsPrice;
         new LambdaUpdateChainWrapper<>(userPOMapper).eq(UserPO::getUuid, uuid).set(UserPO::getBalance, balance + sum).update();
 
-        return ResponseResult.success(true);
+        RecycleGoodsEchoVO recycleGoodsEchoVO = new RecycleGoodsEchoVO(sum, balance + sum);
+        return ResponseResult.success(recycleGoodsEchoVO);
     }
 }
