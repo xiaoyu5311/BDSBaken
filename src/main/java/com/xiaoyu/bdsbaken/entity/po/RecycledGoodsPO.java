@@ -13,6 +13,8 @@ public class RecycledGoodsPO
 {
     private Integer goodsId;
     private String goodsName;
-    private Double goodsPrice;
+    private Double recycledPrice;
+    private Double originalPrice;
+    private Integer amount;
     private String objectId;
 }

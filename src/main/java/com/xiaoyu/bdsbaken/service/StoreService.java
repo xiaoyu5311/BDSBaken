@@ -1,5 +1,6 @@
 package com.xiaoyu.bdsbaken.service;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.xiaoyu.bdsbaken.entity.dto.ResponseResult;
@@ -13,7 +14,6 @@ import com.xiaoyu.bdsbaken.entity.vo.SellGoodsDetailVO;
 import com.xiaoyu.bdsbaken.mapper.RecycledGoodsPOMapper;
 import com.xiaoyu.bdsbaken.mapper.SellGoodsPOMapper;
 import com.xiaoyu.bdsbaken.mapper.UserPOMapper;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,8 +30,7 @@ public class StoreService
     public ResponseResult getBuyGoods(int id)
     {
         SellGoodsPO one = new LambdaQueryChainWrapper<>(sellGoodsPOMapper).eq(SellGoodsPO::getGoodsId, id).one();
-        SellGoodsDetailVO sellGoodsDetailVO = new SellGoodsDetailVO();
-        BeanUtils.copyProperties(one, sellGoodsDetailVO);
+        SellGoodsDetailVO sellGoodsDetailVO = BeanUtil.copyProperties(one, SellGoodsDetailVO.class);
         return ResponseResult.success(sellGoodsDetailVO);
     }
 
@@ -54,8 +53,7 @@ public class StoreService
     public ResponseResult getRecycledGoods(int id)
     {
         RecycledGoodsPO one = new LambdaQueryChainWrapper<>(recycledGoodsPOMapper).eq(RecycledGoodsPO::getGoodsId, id).one();
-        RecycledGoodsDetailVO recycledGoodsDetailVO = new RecycledGoodsDetailVO();
-        BeanUtils.copyProperties(one, recycledGoodsDetailVO);
+        RecycledGoodsDetailVO recycledGoodsDetailVO = BeanUtil.copyProperties(one, RecycledGoodsDetailVO.class);
         return ResponseResult.success(recycledGoodsDetailVO);
     }
 
@@ -65,7 +63,7 @@ public class StoreService
         String uuid = recycleGoodsVO.getUuid();//用户ID
         double total = recycleGoodsVO.getAmount() * recycleGoodsVO.getAmount();
         Double balance = new LambdaQueryChainWrapper<>(userPOMapper).eq(UserPO::getUuid, recycleGoodsVO.getUuid()).one().getBalance();
-        Double goodsPrice = new LambdaQueryChainWrapper<>(recycledGoodsPOMapper).eq(RecycledGoodsPO::getGoodsId, recycleGoodsVO.getGoodsId()).one().getGoodsPrice();
+        Double goodsPrice = new LambdaQueryChainWrapper<>(recycledGoodsPOMapper).eq(RecycledGoodsPO::getGoodsId, recycleGoodsVO.getGoodsId()).one().getRecycledPrice();
         Double sum = total * goodsPrice;
         new LambdaUpdateChainWrapper<>(userPOMapper).eq(UserPO::getUuid, uuid).set(UserPO::getBalance, balance + sum).update();
 

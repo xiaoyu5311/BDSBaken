@@ -30,12 +30,12 @@ public class StoreController
 
     @GetMapping("/recycle/{id}")
 //根据ID获取回收商品的详细信息
-    ResponseResult getRecycledGoods(@PathVariable int goods_id)
+    ResponseResult getRecycledGoods(@PathVariable int id)
     {
-        return storeService.getRecycledGoods(goods_id);
+        return storeService.getRecycledGoods(id);
     }
 
-    @PostMapping("/recycled")
+    @PostMapping("/recycle")
     ResponseResult recycleGoods(@RequestBody RecycleGoodsVO recycleGoodsVO)
     {
         return storeService.recycleGoods(recycleGoodsVO);

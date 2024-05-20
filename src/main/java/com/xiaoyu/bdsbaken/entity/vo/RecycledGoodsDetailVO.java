@@ -11,6 +11,8 @@ public class RecycledGoodsDetailVO
 {
     private Integer goodsId;
     private String goodsName;
-    private Double goodsPrice;
+    private Integer amount;//需要回收的数量
+    private Double recycledPrice;
+    private Double originalPrice;
     private String objectId;
 }
